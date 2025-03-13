@@ -1,0 +1,86 @@
+
+public class BankAccount {
+    private int id;
+    private double balance;
+    private static double interestRate = 0.02;
+    private static int bankAccCount = 1;
+
+
+    public BankAccount(int id, double balance, double interestRate){
+        this.id = id;
+        this.balance = balance;
+        BankAccount.interestRate = interestRate;
+    }
+    BankAccount(){
+        this.id = bankAccCount++;
+    }
+    public static void setInterestRate(double interest){
+        BankAccount.interestRate = interest;
+    }
+    public double getInterest(int years){
+        return this.balance * BankAccount.interestRate * years;
+
+    }
+    public void deposit(double amount){
+        this.balance += amount;
+    }
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+
+}
+
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String[] command = scanner.nextLine().split(" ");
+        Map<Integer, BankAccount> map = new HashMap<>();
+
+        while (!command[0].equals("End")) {
+            if (command[0].equals("Create")) {
+                BankAccount bank = new BankAccount();
+                map.put(bank.getId(), bank);
+                System.out.println(String.format("Account ID%d created", bank.getId()));
+            } else if (command[0].equals("Deposit")) {
+                int id = Integer.parseInt(command[1]);
+                double depositAmount = Double.parseDouble(command[2]);
+                if (map.containsKey(id)) {
+                    BankAccount bank = map.get(id);
+                    bank.deposit(depositAmount);
+                    System.out.println(String.format("Deposited %.0f to ID%d", depositAmount, id));
+                } else {
+                    System.out.println("Account does not exist");
+                }
+            } else if (command[0].equals("SetInterest")) {
+                double interestRate = Double.parseDouble(command[1]);
+                BankAccount.setInterestRate(interestRate);
+            } else if (command[0].equals("GetInterest")) {
+                int id = Integer.parseInt(command[1]);
+                int years = Integer.parseInt(command[2]);
+                if (map.containsKey(id)) {
+                    BankAccount bank = map.get(id);
+                    double interest = bank.getInterest(years);
+                    System.out.println(String.format("%.2f", interest));
+                } else {
+                    System.out.println("Account does not exist");
+                }
+            }
+
+            command = scanner.nextLine().split(" ");
+        }
+
+        scanner.close();
+    }
+}
